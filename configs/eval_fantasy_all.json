@@ -1,0 +1,13 @@
+{
+    "prompt": "two people sitting on a bench in the park",
+    "style_name": "fantasy",
+    "use_text_inversion": false,
+    "num_samples": 10,
+    "num_rows": 1,
+    "output_size": 256,
+    "num_inference_steps": 100,
+    "checkpoints": [200],
+    "output_dir": "outputs/fantasy_all",
+    "model_dir": "models/fantasy_all",
+    "seed": 9999997
+}

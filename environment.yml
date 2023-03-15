@@ -1,0 +1,18 @@
+name: sd
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - pip:
+    - accelerate
+    - diffusers  
+    - tqdm
+    - opencv-python
+    - transformers==^4.24.0
+  - numpy  
+  - pytorch 
+  - torchvision 
+  - torchaudio 
+  - ftfy
+  - cudatoolkit=11.6

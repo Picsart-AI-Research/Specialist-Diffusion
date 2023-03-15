@@ -1,0 +1,11 @@
+{
+    "prompt": "a robot",
+    "style_name": "flat",
+    "use_text_inversion": false,
+    "num_samples": 9,
+    "num_rows": 3,
+    "checkpoints": [1, 2, 5, 10, 20, 50, 100, 200, 300, 400],
+    "output_dir": "output",
+    "model_dir": "default",
+    "seed": 9999997
+}

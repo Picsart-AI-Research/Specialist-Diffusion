@@ -1,0 +1,11 @@
+.idea
+*.ipynb
+__pycache__
+wandb
+data/
+similars/
+*.jpg
+*.png
+libs/BLIP
+*.out
+models/

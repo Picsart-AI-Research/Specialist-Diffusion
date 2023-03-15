@@ -1,0 +1,11 @@
+accelerate
+torch
+torchvision
+opencv-python
+numpy
+transformers>=4.25.1
+ftfy
+tensorboard
+modelcards
+diffusers
+datasets

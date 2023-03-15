@@ -1,0 +1,13 @@
+{
+    "prompt": "two people sitting on a bench in the park",
+    "style_name": "flat",
+    "use_text_inversion": false,
+    "num_samples": 10,
+    "num_rows": 1,
+    "num_inference_steps": 100,
+    "checkpoints": [200],
+    "output_dir": "outputs/flat_all",
+    "model_dir": "models/flat_all",
+    "output_size": 256,
+    "seed": 9999997
+}
