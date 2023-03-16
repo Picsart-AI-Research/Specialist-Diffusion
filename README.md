@@ -12,12 +12,6 @@ Then, set up the configuration for accelerate with:
     accelerate config
 
 ## Train a model
-If you never used huggingface before, run
-
-    huggingface-cli login
-    
-so the pretrained weights will be automatically downloaded.
-
 An example call:
 
     accelerate launch train.py --config='configs/train_default.json'
