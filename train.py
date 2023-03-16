@@ -188,55 +188,58 @@ if __name__ == '__main__':
                 ldm_loss = F.mse_loss(noise_pred, noise, reduction="mean")
                 
                 if config['use_content_loss']:
-                    caption_hidden_states = text_encoder(batch["raw_ids"])[0]
-                    # Generate another image with same propmt and calculate content loss
-                    eval_scheduler = PNDMScheduler(beta_start=0.00085, beta_end=0.012,
-                                                   beta_schedule="scaled_linear", skip_prk_steps=True)
-
-                    eval_scheduler.set_timesteps(config['num_inference_steps'])
-                    if torch.is_tensor(eval_scheduler.timesteps):
-                        timesteps_tensor = eval_scheduler.timesteps
+                    if step != 0:
+                        content_loss = torch.zeros((1,), device=latents.device)
                     else:
-                        timesteps_tensor = torch.tensor(eval_scheduler.timesteps.copy())
+                        caption_hidden_states = text_encoder(batch["raw_ids"])[0]
+                        # Generate another image with same propmt and calculate content loss
+                        eval_scheduler = PNDMScheduler(beta_start=0.00085, beta_end=0.012, 
+                                            beta_schedule="scaled_linear", skip_prk_steps=True)
 
-                    uncond_input = tokenizer([""] * latents.shape[0], padding="max_length",
-                                             max_length=tokenizer.model_max_length, return_tensors="pt")
-                    uncond_embeddings = text_encoder(uncond_input.input_ids.to(accelerator.device))[0]
-                    text_embeddings = torch.cat([uncond_embeddings, caption_hidden_states])
-                                    
-                    fake_latents = torch.randn(
-                        latents.shape,
-                        device=latents.device,
-                        dtype=latents.dtype,
-                    )              
-                        
-                    for t in timesteps_tensor:                                           
-                        if t == timesteps[0]:
-                            latent_model_input = torch.cat([fake_latents] * 2)
-                            noise_pred = unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample
-                            noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
-                            noise_pred = noise_pred_uncond + 7.5 * (noise_pred_text - noise_pred_uncond)
-                            fake_latents = eval_scheduler.step(noise_pred, t, fake_latents).prev_sample
+                        eval_scheduler.set_timesteps(config['num_inference_steps'])
+                        if torch.is_tensor(eval_scheduler.timesteps):
+                            timesteps_tensor = eval_scheduler.timesteps
                         else:
-                            with torch.no_grad():
+                            timesteps_tensor = torch.tensor(eval_scheduler.timesteps.copy())
+
+                        uncond_input = tokenizer([""] * latents.shape[0], padding="max_length", 
+                                                max_length=tokenizer.model_max_length, return_tensors="pt")
+                        uncond_embeddings = text_encoder(uncond_input.input_ids.to(accelerator.device))[0]
+                        text_embeddings = torch.cat([uncond_embeddings, caption_hidden_states])
+                                        
+                        fake_latents = torch.randn(
+                            latents.shape,
+                            device=latents.device,
+                            dtype=latents.dtype,
+                        )              
+                            
+                        for t in timesteps_tensor:                                           
+                            if t == timesteps[0]:
                                 latent_model_input = torch.cat([fake_latents] * 2)
                                 noise_pred = unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample
                                 noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
                                 noise_pred = noise_pred_uncond + 7.5 * (noise_pred_text - noise_pred_uncond)
                                 fake_latents = eval_scheduler.step(noise_pred, t, fake_latents).prev_sample
+                            else:
+                                with torch.no_grad():
+                                    latent_model_input = torch.cat([fake_latents] * 2)
+                                    noise_pred = unet(latent_model_input, t, encoder_hidden_states=text_embeddings).sample
+                                    noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
+                                    noise_pred = noise_pred_uncond + 7.5 * (noise_pred_text - noise_pred_uncond)
+                                    fake_latents = eval_scheduler.step(noise_pred, t, fake_latents).prev_sample
 
-                    fake_latents = 1 / 0.18215 * fake_latents
-                    fake_image = vae.decode(fake_latents).sample
-                    fake_image = (fake_image / 2 + 0.5).clamp(0, 1)
-                    fake_image = ((fake_image.detach().cpu().permute(0, 2, 3, 1).numpy()) * 255).round().astype("uint8")        
-                    fake_image = Image.fromarray(fake_image[0])
-                    
-                    fake_input = image_processor(images=fake_image, return_tensors='pt')['pixel_values'].to(accelerator.device)
-                    fake_feature = image_encoder(pixel_values=fake_input).pooler_output
-                    gt_input = image_processor(images=Image.open(batch['image_path'][0]), return_tensors='pt')['pixel_values'].to(accelerator.device)
-                    gt_feature = image_encoder(pixel_values=gt_input).pooler_output
-                    
-                    content_loss = 1 - cosine_similarity(fake_feature, gt_feature)                                        
+                        fake_latents = 1 / 0.18215 * fake_latents
+                        fake_image = vae.decode(fake_latents).sample
+                        fake_image = (fake_image / 2 + 0.5).clamp(0, 1)
+                        fake_image = ((fake_image.detach().cpu().permute(0, 2, 3, 1).numpy()) * 255).round().astype("uint8")        
+                        fake_image = Image.fromarray(fake_image[0])
+                        
+                        fake_input = image_processor(images=fake_image, return_tensors='pt')['pixel_values'].to(accelerator.device)
+                        fake_feature = image_encoder(pixel_values=fake_input).pooler_output
+                        gt_input = image_processor(images=Image.open(batch['image_path'][0]), return_tensors='pt')['pixel_values'].to(accelerator.device)
+                        gt_feature = image_encoder(pixel_values=gt_input).pooler_output
+                        
+                        content_loss = 1 - cosine_similarity(fake_feature, gt_feature)                                        
                 else:
                     content_loss = 0
                 
