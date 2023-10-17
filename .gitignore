@@ -4,8 +4,5 @@ __pycache__
 wandb
 data/
 similars/
-*.jpg
-*.png
 libs/BLIP
-*.out
 models/
