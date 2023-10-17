@@ -1,5 +1,5 @@
-# Specialist-Diffusion
-This repository is the official implementation of [Specialist Diffusion](https://openaccess.thecvf.com/content/CVPR2023/papers/Lu_Specialist_Diffusion_Plug-and-Play_Sample-Efficient_Fine-Tuning_of_Text-to-Image_Diffusion_Models_To_CVPR_2023_paper.pdf)
+# Specialist Diffusion: Plug-and-Play Sample-Efficient Fine-Tuning of Text-to-Image Diffusion Models to Learn Any Unseen Style
+This repository is the official implementation of [Specialist Diffusion](https://openaccess.thecvf.com/content/CVPR2023/papers/Lu_Specialist_Diffusion_Plug-and-Play_Sample-Efficient_Fine-Tuning_of_Text-to-Image_Diffusion_Models_To_CVPR_2023_paper.pdf) (CVPR 2023)
 
 [**Specialist Diffusion: Plug-and-Play Sample-Efficient Fine-Tuning of Text-to-Image Diffusion Models to Learn Any Unseen Style**](https://openaccess.thecvf.com/content/CVPR2023/papers/Lu_Specialist_Diffusion_Plug-and-Play_Sample-Efficient_Fine-Tuning_of_Text-to-Image_Diffusion_Models_To_CVPR_2023_paper.pdf) \
 [Haoming Lu](https://github.com/alonewithyou), [Hazarapet Tunanyan](https://hazarapet.github.io/),
@@ -10,7 +10,7 @@ This repository is the official implementation of [Specialist Diffusion](https:/
 | [Project](https://specialist-diffusion.github.io/)
 
 
-<img alt="teaser image" height="400" src="__assets__/images/teaser.png"/>
+<img alt="teaser image" src="__assets__/images/teaser.png"/>
 
 We present **Specialist Diffusion**, a style specific personalized text-to-image model. 
 It is plug-and-play to existing diffusion models and other personalization techniques. 
@@ -38,5 +38,22 @@ An example call:
     accelerate launch eval.py --config='configs/eval_default.json'
 
 ## Plug-and-Play
-<img alt="teaser image" width="800" src="__assets__/images/plug-and-play.png"/>
+<img alt="plug and play image" src="__assets__/images/plug-and-play.png"/>
+
+Combination of **our model** and **Textual Inversion**. Text prompts used for generation are listed top, 
+styles of the respective datasets are listed under, and the methods for training the models are listed left. 
+By integrating **Textual Inversion** with **our model**, the results capture even richer details without losing the style
+
+## BibTex
+If you use our work in your research, please cite our publication:
+```
+@InProceedings{Lu_2023_CVPR,
+    author    = {Lu, Haoming and Tunanyan, Hazarapet and Wang, Kai and Navasardyan, Shant and Wang, Zhangyang and Shi, Humphrey},
+    title     = {Specialist Diffusion: Plug-and-Play Sample-Efficient Fine-Tuning of Text-to-Image Diffusion Models To Learn Any Unseen Style},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2023},
+    pages     = {14267-14276}
+}
+```
 
